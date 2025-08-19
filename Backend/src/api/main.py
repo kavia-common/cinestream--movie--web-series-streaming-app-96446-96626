@@ -59,3 +59,11 @@ def health_check():
 def on_startup():
     """Application startup hook: initialize database tables."""
     init_db()
+
+
+# Allow running this module directly, defaulting to PORT env var or 3001
+if __name__ == "__main__":
+    import os
+    import uvicorn
+
+    uvicorn.run("src.api.main:app", host="0.0.0.0", port=int(os.getenv("PORT", "3001")), reload=False)
