@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from src.core.database import get_db
@@ -15,17 +16,34 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 # PUBLIC_INTERFACE
 @router.post("/register", response_model=UserOut, summary="Register a new user")
 def register_user(payload: UserCreate, db: Session = Depends(get_db)):
-    """Register a new user account with email and password."""
+    """Register a new user account with email and password.
+
+    Validates that the email and (if provided) phone are unique to prevent database
+    integrity errors and return friendly 400 messages instead of 500s.
+    """
+    # Email uniqueness check
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered.")
+
+    # Optional phone uniqueness check (phone has a unique constraint in the DB)
+    if payload.phone:
+        phone_owner = db.query(User).filter(User.phone == payload.phone).first()
+        if phone_owner:
+            raise HTTPException(status_code=400, detail="Phone already registered.")
+
     user = User(
         email=payload.email,
         phone=payload.phone,
         hashed_password=get_password_hash(payload.password),
     )
     db.add(user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # Roll back and return a clear error in case of rare race conditions or other constraint issues
+        db.rollback()
+        raise HTTPException(status_code=400, detail="User with provided email/phone already exists.")
     db.refresh(user)
     return user
 
