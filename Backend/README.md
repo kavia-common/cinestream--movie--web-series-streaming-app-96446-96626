@@ -13,6 +13,12 @@ This is the CineStream backend service implemented with FastAPI and SQLAlchemy. 
 ## Running locally
 
 1. Create a `.env` from `.env.example` and set your configuration.
+
+   Important: Set CORS_ALLOW_ORIGINS to include your frontend origin(s). For the Kavia preview environment:
+   CORS_ALLOW_ORIGINS="https://vscode-internal-14938-beta.beta01.cloud.kavia.ai:4000"
+
+   Do not use "*" when credentials are included in requests, as browsers will block such responses.
+
 2. Install dependencies:
    pip install -r requirements.txt
 3. Start the server:

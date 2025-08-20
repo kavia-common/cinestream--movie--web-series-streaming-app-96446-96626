@@ -13,7 +13,9 @@ class Settings(BaseSettings):
     APP_VERSION: str = Field(default="1.0.0", description="Application version.")
     ENV: str = Field(default="development", description="Environment name.")
     CORS_ALLOW_ORIGINS: str = Field(
-        default="*",
+        # Important: Avoid using "*" when allow_credentials=True in CORSMiddleware.
+        # Default to the running Frontend origin and common local dev origins.
+        default="https://vscode-internal-14938-beta.beta01.cloud.kavia.ai:4000,http://localhost:4000,http://127.0.0.1:4000",
         description="Comma separated list of allowed origins for CORS.",
     )
 
