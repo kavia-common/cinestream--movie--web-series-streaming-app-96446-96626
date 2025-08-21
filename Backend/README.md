@@ -16,7 +16,8 @@ This is the CineStream backend service implemented with FastAPI and SQLAlchemy. 
 
    Important: Set CORS_ALLOW_ORIGINS to include your frontend origin(s). Examples:
    - For local dev: CORS_ALLOW_ORIGINS="http://localhost:4000,http://127.0.0.1:4000"
-   - For Kavia preview: CORS_ALLOW_ORIGINS="https://vscode-internal-14938-beta.beta01.cloud.kavia.ai:4000"
+   - For Kavia preview (current): CORS_ALLOW_ORIGINS="https://vscode-internal-36075-beta.beta01.cloud.kavia.ai:4000"
+   - Another preview example: CORS_ALLOW_ORIGINS="https://vscode-internal-14938-beta.beta01.cloud.kavia.ai:4000"
 
    Do not use "*" when credentials are included in requests, as browsers will block such responses. The backend is configured with FastAPI's CORSMiddleware to respond to preflight OPTIONS requests with the allowed methods and headers.
 

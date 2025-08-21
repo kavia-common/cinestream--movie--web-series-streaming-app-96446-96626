@@ -68,6 +68,23 @@ def health_check():
     """Simple health check endpoint to verify the service is running."""
     return {"message": "Healthy"}
 
+# PUBLIC_INTERFACE
+@app.get(
+    "/_cors-info",
+    tags=["auth"],
+    summary="CORS configuration info",
+    description="Returns allowed origins configured on the server and the Origin header received in the request, to help diagnose CORS issues.",
+)
+def cors_info(origin: str | None = None):
+    """Return current CORS allow list and optionally the request Origin.
+
+    Pass origin via browser automatically (Origin header) — this route is mainly for debugging.
+    """
+    return {
+        "allowed_origins": settings.cors_allowed_origins(),
+        "request_origin": origin,
+    }
+
 
 # Initialize DB on startup (safe if tables already exist)
 @app.on_event("startup")
