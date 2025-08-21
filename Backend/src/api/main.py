@@ -27,13 +27,28 @@ app = FastAPI(
     openapi_tags=openapi_tags,
 )
 
-# CORS
+# CORS: Allow specific frontend origins and ensure preflight OPTIONS are handled
+# Note: When allow_credentials=True, do not use "*" for allow_origins. The list is provided via env.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_allowed_origins(),
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    # Explicitly list common methods to ensure correct Access-Control-Allow-Methods on preflight
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    # Allow typical headers used by browsers on CORS/preflight, plus authorization
+    allow_headers=[
+        "Authorization",
+        "Content-Type",
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "X-Requested-With",
+        "Accept-Language",
+        "Accept-Encoding",
+        "Cache-Control",
+        "Pragma",
+    ],
+    expose_headers=["Content-Disposition"],
 )
 
 # Routers
